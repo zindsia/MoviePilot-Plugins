@@ -8,7 +8,7 @@ class AutoLitterSister(_PluginBase):
     # 插件描述
     plugin_desc = ""
     # 插件图标
-    plugin_icon = "signin.png"
+    plugin_icon = "Melody_A.png"
     # 插件版本
     plugin_version = "0.0.1"
     # 插件作者
