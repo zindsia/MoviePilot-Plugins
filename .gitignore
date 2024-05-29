@@ -161,3 +161,19 @@ cython_debug/
 
 .idea/
 .vscode/
+/.github/
+/app/
+/config/
+/database/
+/tests/
+/.dockerignore
+/app.ico
+/Dockerfile
+/entrypoint
+/frozen.spec
+/haproxy.cfg
+/nginx.conf
+/requirements.txt
+/setup.py
+/update
+/version.py
