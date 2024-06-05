@@ -186,8 +186,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 6,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 6
                                 },
                                 'content': [
                                     {
@@ -202,8 +202,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 6,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 6
                                 },
                                 'content': [
                                     {
@@ -223,8 +223,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 4,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -239,8 +239,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 4,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -255,8 +255,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 4,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -276,8 +276,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 6,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 6
                                 },
                                 'content': [
                                     {
@@ -292,8 +292,8 @@ class AutoLitterSister(_PluginBase):
                             {
                                 'component': 'VCol',
                                 'props': {
-                                    'cols': 6,
-                                    'md': 12
+                                    'cols': 12,
+                                    'md': 6
                                 },
                                 'content': [
                                     {
