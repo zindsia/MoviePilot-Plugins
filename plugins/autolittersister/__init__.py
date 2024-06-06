@@ -3,7 +3,7 @@ from typing import List, Tuple, Dict, Any
 from app.log import logger
 from app.plugins import _PluginBase
 from plugins.autolittersister.mediaserver import Emby, Plex, Jellyfin
-from plugins.autolittersister.scraper import JavLibrary, Metatube
+from plugins.autolittersister.scraper import JavLibrary
 from plugins.autolittersister.sites import Torrent, sort_torrents, filter_torrents
 from plugins.autolittersister.sites.fsm import FSM
 from plugins.autolittersister.sites.mteam import MTeam
@@ -16,7 +16,7 @@ class AutoLitterSister(_PluginBase):
     # 插件图标
     plugin_icon = "Melody_A.png"
     # 插件版本
-    plugin_version = "0.0.5"
+    plugin_version = "0.0.6"
     # 插件作者
     plugin_author = "envyafish"
     # 作者主页
@@ -30,17 +30,22 @@ class AutoLitterSister(_PluginBase):
 
     _enabled: bool = False,
     _notify: bool = True,
-    _mteam_api_key: str = "",
-    _fsm_api_key: str = "",
-    _fsm_passkey: str = "",
-    _metatube_url: str = "",
-    _emby_server: str = "",
-    _emby_api_key: str = "",
-    _jellyfin_server: str = "",
-    _jellyfin_api_key: str = "",
-    _jellyfin_user: str = "",
+    _mteam_api_key: str = ""
+    _fsm_api_key: str = ""
+    _fsm_passkey: str = ""
+    _emby_server: str = ""
+    _emby_api_key: str = ""
+    _jellyfin_server: str = ""
+    _jellyfin_api_key: str = ""
+    _jellyfin_user: str = ""
     _plex_server: str = ""
     _plex_token: str = ""
+    _brush: bool = False
+    _only_chinese: bool = False
+    _on_uc: bool = False
+    _min_mb: int = None
+    _max_mb: int = None
+    _top: int = 1
 
     def init_plugin(self, config: dict = None):
         if config:
@@ -49,7 +54,6 @@ class AutoLitterSister(_PluginBase):
             self._mteam_api_key = config.get("mteam_api_key", "")
             self._fsm_api_key = config.get("fsm_api_key", "")
             self._fsm_passkey = config.get("fsm_passkey", "")
-            self._metatube_url = config.get("metatube_url", "")
             self._emby_server = config.get("emby_server", "")
             self._emby_api_key = config.get("emby_api_key", "")
             self._jellyfin_server = config.get("jellyfin_server", "")
@@ -57,6 +61,13 @@ class AutoLitterSister(_PluginBase):
             self._jellyfin_user = config.get("jellyfin_user", "")
             self._plex_server = config.get("plex_server", "")
             self._plex_token = config.get("plex_token", "")
+            self._brush = config.get("brush", False)
+            self._only_chinese = config.get("only_chinese", False)
+            self._on_uc = config.get("on_uc", False)
+            self._min_mb = config.get("min_mb")
+            self._max_mb = config.get("max_mb")
+            self._top = config.get("top", 1)
+
 
         pass
 
@@ -114,6 +125,29 @@ class AutoLitterSister(_PluginBase):
                                         }
                                     }
                                 ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSelect',
+                                        'props': {
+                                            'model': 'top',
+                                            'label': '榜单选择',
+                                            'items': [
+                                                {"title": "TOP20", "value": 1},
+                                                {"title": "TOP40", "value": 2},
+                                                {"title": "TOP60", "value": 3},
+                                                {"title": "TOP80", "value": 4},
+                                                {"title": "TOP100", "value": 5}
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -124,7 +158,119 @@ class AutoLitterSister(_PluginBase):
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
-                                    'md': 12
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSwitch',
+                                        'props': {
+                                            'model': 'brush',
+                                            'label': '洗版',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSwitch',
+                                        'props': {
+                                            'model': 'only_chinese',
+                                            'label': '仅中文',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSwitch',
+                                        'props': {
+                                            'model': 'on_uc',
+                                            'label': '仅步兵',
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VAlert',
+                                        'props': {
+                                            'type': 'info',
+                                            'variant': 'tonal',
+                                            'text': '1.无论是否开启洗版，都会进行中文和步兵排序,优选种子'
+                                                    '2.关闭洗版，将会强制过滤中文和步兵(若<仅中文>或者<仅步兵>开启)'
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 6
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'min_mb',
+                                            'label': '最小大小(MB)',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 6
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'max_mb',
+                                            'label': '最大大小(MB)',
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 6
                                 },
                                 'content': [
                                     {
@@ -135,17 +281,12 @@ class AutoLitterSister(_PluginBase):
                                         }
                                     }
                                 ]
-                            }
-                        ]
-                    },
-                    {
-                        'component': 'VRow',
-                        'content': [
+                            },
                             {
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
-                                    'md': 12
+                                    'md': 6
                                 },
                                 'content': [
                                     {
@@ -153,27 +294,6 @@ class AutoLitterSister(_PluginBase):
                                         'props': {
                                             'model': 'fsm_api_key',
                                             'label': '飞天拉面神教APIKEY',
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        'component': 'VRow',
-                        'content': [
-                            {
-                                'component': 'VCol',
-                                'props': {
-                                    'cols': 12,
-                                    'md': 12
-                                },
-                                'content': [
-                                    {
-                                        'component': 'VTextField',
-                                        'props': {
-                                            'model': 'metatube_url',
-                                            'label': 'Metatube地址',
                                         }
                                     }
                                 ]
@@ -211,6 +331,43 @@ class AutoLitterSister(_PluginBase):
                                         'props': {
                                             'model': 'emby_api_key',
                                             'label': 'Emby APIKEY',
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        'component': 'VRow',
+                        'content': [
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 6
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'plex_server',
+                                            'label': 'Plex地址',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 6
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'plex_token',
+                                            'label': 'Plex token',
                                         }
                                     }
                                 ]
@@ -263,44 +420,7 @@ class AutoLitterSister(_PluginBase):
                                         'component': 'VTextField',
                                         'props': {
                                             'model': 'jellyfin_user',
-                                            'label': 'Jeelyfin 用户',
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        'component': 'VRow',
-                        'content': [
-                            {
-                                'component': 'VCol',
-                                'props': {
-                                    'cols': 12,
-                                    'md': 6
-                                },
-                                'content': [
-                                    {
-                                        'component': 'VTextField',
-                                        'props': {
-                                            'model': 'plex_server',
-                                            'label': 'Plex地址',
-                                        }
-                                    }
-                                ]
-                            },
-                            {
-                                'component': 'VCol',
-                                'props': {
-                                    'cols': 12,
-                                    'md': 6
-                                },
-                                'content': [
-                                    {
-                                        'component': 'VTextField',
-                                        'props': {
-                                            'model': 'plex_token',
-                                            'label': 'Plex token',
+                                            'label': 'Jellyfin 用户',
                                         }
                                     }
                                 ]
@@ -311,7 +431,7 @@ class AutoLitterSister(_PluginBase):
             }
         ], {
             "enabled": False,
-            "notify": True,
+            "notify": False,
             "mteam_api_key": "",
             "fsm_api_key": "",
             "fsm_passkey": "",
@@ -322,7 +442,13 @@ class AutoLitterSister(_PluginBase):
             "jellyfin_api_key": "",
             "jellyfin_user": "",
             "plex_server": "",
-            "plex_token": ""
+            "plex_token": "",
+            "brush": False,
+            "only_chinese": False,
+            "on_uc": False,
+            "min_mb": None,
+            "max_mb": None,
+            "top": 1
         }
 
     def get_page(self) -> List[dict]:

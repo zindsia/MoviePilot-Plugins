@@ -1,7 +1,7 @@
 [
   {
     "code": "SONE-099",
-    "status": "SUBSCRIBE|UPGRADE|DOWN",
+    "status": "SUBSCRIBE|UPGRADE|COMPLETED",
     "upgrade": {
       "chinese": true,
       "uc": true

@@ -29,18 +29,4 @@ class JavLibrary:
                     codes.append(code)
         return codes
 
-class Metatube:
-    metatube_url: str = ''
 
-    def __init__(self, metatube_server):
-        self.metatube_url = f"{metatube_server}/v1/movies/search"
-
-    def search(self, keyword):
-        url = f"{self.metatube_url}?q={keyword}&provider=AVBASE"
-        res = requests.get(url)
-        if res.status_code == 200:
-            data = res.json()
-            if data['data']:
-                movie = data['data'][0]
-                return movie
-        return None
