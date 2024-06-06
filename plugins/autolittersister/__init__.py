@@ -16,7 +16,7 @@ class AutoLitterSister(_PluginBase):
     # 插件图标
     plugin_icon = "Melody_A.png"
     # 插件版本
-    plugin_version = "0.0.6"
+    plugin_version = "0.0.7"
     # 插件作者
     plugin_author = "envyafish"
     # 作者主页
@@ -46,6 +46,8 @@ class AutoLitterSister(_PluginBase):
     _min_mb: int = None
     _max_mb: int = None
     _top: int = 1
+    _once: bool = False
+    _cron: str = "0 20 * * *"
 
     def init_plugin(self, config: dict = None):
         if config:
@@ -67,6 +69,8 @@ class AutoLitterSister(_PluginBase):
             self._min_mb = config.get("min_mb")
             self._max_mb = config.get("max_mb")
             self._top = config.get("top", 1)
+            self._once = config.get("once", False)
+            self._cron = config.get("cron", "")
 
 
         pass
@@ -134,21 +138,31 @@ class AutoLitterSister(_PluginBase):
                                 },
                                 'content': [
                                     {
-                                        'component': 'VSelect',
+                                        'component': 'VSwitch',
                                         'props': {
-                                            'model': 'top',
-                                            'label': '榜单选择',
-                                            'items': [
-                                                {"title": "TOP20", "value": 1},
-                                                {"title": "TOP40", "value": 2},
-                                                {"title": "TOP60", "value": 3},
-                                                {"title": "TOP80", "value": 4},
-                                                {"title": "TOP100", "value": 5}
-                                            ]
+                                            'model': 'once',
+                                            'label': '来一下',
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'cron',
+                                            'label': '定时执行,cron表达式',
+                                        }
+                                    }
+                                ]
+                            },
+
                         ]
                     },
                     {
@@ -198,6 +212,29 @@ class AutoLitterSister(_PluginBase):
                                         'props': {
                                             'model': 'on_uc',
                                             'label': '仅步兵',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 3
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VSelect',
+                                        'props': {
+                                            'model': 'top',
+                                            'label': '榜单选择',
+                                            'items': [
+                                                {"title": "TOP20", "value": 1},
+                                                {"title": "TOP40", "value": 2},
+                                                {"title": "TOP60", "value": 3},
+                                                {"title": "TOP80", "value": 4},
+                                                {"title": "TOP100", "value": 5}
+                                            ]
                                         }
                                     }
                                 ]
@@ -270,7 +307,7 @@ class AutoLitterSister(_PluginBase):
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
-                                    'md': 6
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -286,7 +323,7 @@ class AutoLitterSister(_PluginBase):
                                 'component': 'VCol',
                                 'props': {
                                     'cols': 12,
-                                    'md': 6
+                                    'md': 4
                                 },
                                 'content': [
                                     {
@@ -294,6 +331,22 @@ class AutoLitterSister(_PluginBase):
                                         'props': {
                                             'model': 'fsm_api_key',
                                             'label': '飞天拉面神教APIKEY',
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                'component': 'VCol',
+                                'props': {
+                                    'cols': 12,
+                                    'md': 4
+                                },
+                                'content': [
+                                    {
+                                        'component': 'VTextField',
+                                        'props': {
+                                            'model': 'fsm_passkey',
+                                            'label': '飞天拉面神教passkey',
                                         }
                                     }
                                 ]
@@ -435,7 +488,6 @@ class AutoLitterSister(_PluginBase):
             "mteam_api_key": "",
             "fsm_api_key": "",
             "fsm_passkey": "",
-            "metatube_url": "",
             "emby_server": "",
             "emby_api_key": "",
             "jellyfin_server": "",
@@ -448,7 +500,9 @@ class AutoLitterSister(_PluginBase):
             "on_uc": False,
             "min_mb": None,
             "max_mb": None,
-            "top": 1
+            "top": 1,
+            "once": False,
+            "cron": "0 20 * * *"
         }
 
     def get_page(self) -> List[dict]:
