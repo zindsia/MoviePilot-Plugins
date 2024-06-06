@@ -16,7 +16,7 @@ class AutoLitterSister(_PluginBase):
     # 插件图标
     plugin_icon = "Melody_A.png"
     # 插件版本
-    plugin_version = "0.0.4"
+    plugin_version = "0.0.5"
     # 插件作者
     plugin_author = "envyafish"
     # 作者主页
@@ -231,7 +231,7 @@ class AutoLitterSister(_PluginBase):
                                         'component': 'VTextField',
                                         'props': {
                                             'model': 'jellyfin_server',
-                                            'label': 'Jellfin地址',
+                                            'label': 'Jellyfin地址',
                                         }
                                     }
                                 ]
